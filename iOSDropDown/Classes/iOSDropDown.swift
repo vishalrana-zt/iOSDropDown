@@ -136,10 +136,16 @@ open class DropDown: UITextField {
         let size = frame.height
         let arrowView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: size, height: size))
         let arrowContainerView = UIView(frame: arrowView.frame)
-        if semanticContentAttribute == .forceRightToLeft {
-            leftView = arrowView
-            leftViewMode = .always
-            leftView?.addSubview(arrowContainerView)
+        if #available(iOS 9.0, *) {
+            if semanticContentAttribute == .forceRightToLeft {
+                leftView = arrowView
+                leftViewMode = .always
+                leftView?.addSubview(arrowContainerView)
+            } else {
+                rightView = arrowView
+                rightViewMode = .always
+                rightView?.addSubview(arrowContainerView)
+            }
         } else {
             rightView = arrowView
             rightViewMode = .always
@@ -246,21 +252,21 @@ open class DropDown: UITextField {
                                       height: self.tableheightX)
             self.table.alpha = 1
             self.shadow.frame = self.table.frame
-            self.shadow.dropShadow()
             self.arrow.position = .up
         }) {_ in
+            self.shadow.dropShadow()
             self.layoutIfNeeded()
         }
     }
 
     public func hideList() {
         TableWillDisappearCompletion()
+        self.shadow.alpha = 0
         UIView.animate(withDuration: 0.3, animations: {
             self.table.frame = CGRect(x: self.pointToParent.x,
                                       y: self.pointToParent.y + self.frame.height,
                                       width: self.frame.width,
                                       height: 0)
-            self.shadow.alpha = 0
             self.shadow.frame = self.table.frame
             self.arrow.position = .down
         }) {_ in
@@ -535,5 +541,8 @@ extension UIView {
         return nil
     }
 }
+
+
+
 
 
